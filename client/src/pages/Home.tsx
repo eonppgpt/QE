@@ -1,9 +1,11 @@
 import { useState } from "react";
+import { useMutation } from "@tanstack/react-query";
 import Hero from "@/components/Hero";
 import GiftCard from "@/components/GiftCard";
 import AboutSection from "@/components/AboutSection";
 import OrderForm, { OrderFormData } from "@/components/OrderForm";
 import { useToast } from "@/hooks/use-toast";
+import { apiRequest } from "@/lib/queryClient";
 
 import originalSet from "@assets/QE ORIGINAL SET_1759850209760.jpg";
 import luxuryEdition from "@assets/LUXURY EDITION_1759850205169.jpg";
@@ -46,25 +48,38 @@ const giftSets = [
 ];
 
 export default function Home() {
-  const [showOrderForm, setShowOrderForm] = useState(false);
   const [selectedGift, setSelectedGift] = useState("");
   const { toast } = useToast();
 
+  const orderMutation = useMutation({
+    mutationFn: async (data: OrderFormData) => {
+      const res = await apiRequest("POST", "/api/orders", data);
+      return await res.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Order Received!",
+        description: "Thank you for your order. We'll process it shortly and deliver it with care.",
+      });
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Order Failed",
+        description: error.message || "Failed to submit order. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
   const handleSendGift = (giftId: string) => {
     setSelectedGift(giftId);
-    setShowOrderForm(true);
     const formSection = document.getElementById("order-form");
     formSection?.scrollIntoView({ behavior: "smooth" });
   };
 
   const handleOrderSubmit = (data: OrderFormData) => {
-    console.log("Order submitted:", data);
-    toast({
-      title: "Order Received!",
-      description: "Thank you for your order. We'll process it shortly.",
-    });
-    setShowOrderForm(false);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    orderMutation.mutate(data);
   };
 
   return (
@@ -105,7 +120,7 @@ export default function Home() {
             Complete the form below to send love across borders
           </p>
           <div className="bg-card rounded-2xl p-8 md:p-12 shadow-md">
-            <OrderForm onSubmit={handleOrderSubmit} />
+            <OrderForm onSubmit={handleOrderSubmit} isLoading={orderMutation.isPending} />
           </div>
         </div>
       </section>
