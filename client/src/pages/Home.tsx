@@ -71,7 +71,7 @@ export default function Home() {
     <div className="min-h-screen">
       <Hero />
 
-      <section className="py-24 md:py-32">
+      <section id="gifts-section" className="py-24 md:py-32">
         <div className="max-w-7xl mx-auto px-6 md:px-8">
           <h2 
             className="font-serif text-3xl md:text-5xl font-light text-center mb-16"
@@ -110,11 +110,25 @@ export default function Home() {
         </div>
       </section>
 
-      <footer className="py-12 border-t border-border">
-        <div className="max-w-7xl mx-auto px-6 md:px-8 text-center">
-          <p className="text-sm text-muted-foreground">
-            © 2025 QE - Q's Embrace. Connecting hearts beyond borders.
-          </p>
+      <footer className="py-16 border-t border-border bg-accent/20">
+        <div className="max-w-7xl mx-auto px-6 md:px-8">
+          <div className="text-center mb-8">
+            <h3 className="font-serif text-2xl md:text-3xl font-light mb-2">QE</h3>
+            <p className="text-sm text-muted-foreground italic mb-6">
+              "Connecting hearts beyond borders"
+            </p>
+          </div>
+          
+          <div className="text-center space-y-2 text-sm text-muted-foreground mb-8">
+            <p>Privacy Officer: 이가언</p>
+            <p>Address: 성북구 정릉로 77 국민대학교 경영관</p>
+          </div>
+          
+          <div className="text-center pt-6 border-t border-border">
+            <p className="text-xs text-muted-foreground">
+              © 2025 QE - Q's Embrace. All rights reserved.
+            </p>
+          </div>
         </div>
       </footer>
     </div>
