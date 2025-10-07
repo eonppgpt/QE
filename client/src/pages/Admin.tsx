@@ -15,7 +15,9 @@ export default function Admin() {
   useEffect(() => {
     const checkSession = async () => {
       try {
-        const res = await fetch("/api/admin/status");
+        const res = await fetch("/api/admin/status", {
+          credentials: "include",
+        });
         const data = await res.json();
         if (data.isAdmin) {
           setIsLoggedIn(true);
@@ -29,14 +31,29 @@ export default function Admin() {
     checkSession();
   }, []);
 
-  const { data: orders = [], isLoading, refetch } = useQuery<Order[]>({
+  const {
+    data: orders = [],
+    isLoading,
+    refetch,
+  } = useQuery<Order[]>({
     queryKey: ["/api/orders"],
     enabled: isLoggedIn,
   });
 
   const loginMutation = useMutation({
-    mutationFn: async ({ username, password }: { username: string; password: string }) => {
-      const res = await apiRequest("POST", "/api/admin/login", { username, password });
+    mutationFn: async ({
+      username,
+      password,
+    }: {
+      username: string;
+      password: string;
+    }) => {
+      const res = await apiRequest(
+        "POST",
+        "/api/admin/login",
+        { username, password },
+        { credentials: "include" },
+      );
       return await res.json();
     },
     onSuccess: () => {
@@ -58,7 +75,10 @@ export default function Admin() {
 
   const logoutMutation = useMutation({
     mutationFn: async () => {
-      const res = await apiRequest("POST", "/api/admin/logout", {});
+      const res = await fetch("/api/admin/logout", {
+        method: "POST",
+        credentials: "include",
+      });
       return await res.json();
     },
     onSuccess: () => {
@@ -90,7 +110,9 @@ export default function Admin() {
   }
 
   if (!isLoggedIn) {
-    return <AdminLogin onLogin={handleLogin} isLoading={loginMutation.isPending} />;
+    return (
+      <AdminLogin onLogin={handleLogin} isLoading={loginMutation.isPending} />
+    );
   }
 
   if (isLoading) {
