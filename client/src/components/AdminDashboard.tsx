@@ -11,19 +11,7 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { LogOut, Gift, User, MapPin } from "lucide-react";
-
-interface Order {
-  id: string;
-  senderName: string;
-  senderCountry: string;
-  receiverName: string;
-  receiverAddress: string;
-  receiverPhone: string;
-  messageCard: string;
-  giftSelection: string;
-  paymentMethod: string;
-  createdAt: string;
-}
+import type { Order } from "@shared/schema";
 
 interface AdminDashboardProps {
   orders: Order[];

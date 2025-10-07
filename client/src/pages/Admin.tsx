@@ -1,38 +1,18 @@
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import AdminLogin from "@/components/AdminLogin";
 import AdminDashboard from "@/components/AdminDashboard";
 import { useToast } from "@/hooks/use-toast";
-
-const mockOrders = [
-  {
-    id: "order-demo-001",
-    senderName: "Emily Wilson",
-    senderCountry: "United Kingdom",
-    receiverName: "이지은",
-    receiverAddress: "서울특별시 종로구 세종대로 209",
-    receiverPhone: "+82-10-1111-2222",
-    messageCard: "Thinking of you always. Hope this brightens your day!",
-    giftSelection: "original",
-    paymentMethod: "card",
-    createdAt: "2025-01-07T14:20:00Z"
-  },
-  {
-    id: "order-demo-002",
-    senderName: "Michael Chen",
-    senderCountry: "Singapore",
-    receiverName: "최수영",
-    receiverAddress: "인천광역시 연수구 송도국제대로 123",
-    receiverPhone: "+82-10-3333-4444",
-    messageCard: "For all your hard work and dedication. You deserve the best!",
-    giftSelection: "luxury",
-    paymentMethod: "paypal",
-    createdAt: "2025-01-06T09:15:00Z"
-  },
-];
+import type { Order } from "@shared/schema";
 
 export default function Admin() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const { toast } = useToast();
+
+  const { data: orders = [], isLoading, refetch } = useQuery<Order[]>({
+    queryKey: ["/api/orders"],
+    enabled: isLoggedIn,
+  });
 
   const handleLogin = (username: string, password: string) => {
     if (username === "eonpp" && password === "moonchild12!") {
@@ -41,6 +21,7 @@ export default function Admin() {
         title: "Login Successful",
         description: "Welcome to the admin dashboard",
       });
+      refetch();
     } else {
       toast({
         title: "Login Failed",
@@ -62,5 +43,16 @@ export default function Admin() {
     return <AdminLogin onLogin={handleLogin} />;
   }
 
-  return <AdminDashboard orders={mockOrders} onLogout={handleLogout} />;
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading orders...</p>
+        </div>
+      </div>
+    );
+  }
+
+  return <AdminDashboard orders={orders} onLogout={handleLogout} />;
 }
